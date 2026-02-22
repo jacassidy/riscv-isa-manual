@@ -1,6 +1,6 @@
 [[rv32e]]
 == RV32E and RV64E Base Integer Instruction Sets, Version 2.0
-This chapter describes a proposal for the RV32E and RV64E base integer
+This chapter describes the RV32E and RV64E base integer
 instruction sets, designed for microcontrollers in embedded systems.
 RV32E and RV64E are reduced versions of RV32I and RV64I, respectively:
 the only change is to reduce the number of integer registers to 16. This
@@ -32,6 +32,7 @@ corresponding core power reduction.
 
 === RV32E and RV64E Instruction Set Encoding
 (((RV32E, difference from RV32I)))
+[[norm:diff-rv32e-rv32i]]
 RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I
 respectively, except that only registers `x0-x15` are provided. All
 encodings specifying the other registers `x16-x31` are reserved.

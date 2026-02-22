@@ -124,11 +124,11 @@ all legal instructions executed on each hart (i.e., the ISA is one
 component of the EEI), and the handling of any interrupts or exceptions
 raised during execution including environment calls. Examples of EEIs
 include the Linux application binary interface (ABI), or the RISC-V
-supervisor binary interface (SBI). The implementation of a RISC-V
+supervisor binary interface (SBI). [#norm:execution_environment_implementation_flexibility]#The implementation of a RISC-V
 execution environment can be pure hardware, pure software, or a
 combination of hardware and software. For example, opcode traps and
 software emulation can be used to implement functionality not provided
-in hardware. Examples of execution environment implementations include:
+in hardware.# Examples of execution environment implementations include:
 
 * "Bare metal" hardware platforms where harts are directly implemented
 by physical processor threads and instructions have full access to the
@@ -216,16 +216,16 @@ Although it is convenient to speak of _the_ RISC-V ISA, RISC-V is
 actually a family of related ISAs, of which there are currently four
 base ISAs. Each base integer instruction set is characterized by the
 width of the integer registers and the corresponding size of the address
-space and by the number of integer registers. There are two primary base
+space and by the number of integer registers. [#norm:base_integer_variants]#There are two primary base
 integer variants, RV32I and RV64I, described in
 <<rv32>> and <<rv64>>, which provide 32-bit
-or 64-bit address spaces respectively. We use the term XLEN to refer to
-the width of an integer register in bits (either 32 or 64).
+or 64-bit address spaces respectively.# [#norm:xlen_definition]#We use the term XLEN to refer to
+the width of an integer register in bits (either 32 or 64).#
 <<rv32e>> describes the RV32E and RV64E subset variants of the
 RV32I or RV64I base instruction sets respectively, which have been added to support small
 microcontrollers, and which have half the number of integer registers.
-The base integer instruction sets use a two's-complement
-representation for signed integer values.
+[#norm:twos_complement_signed_integers]#The base integer instruction sets use a two's-complement
+representation for signed integer values.#
 
 
 [NOTE]
@@ -281,7 +281,7 @@ RV64I. This would also be more consistent with the use of the same LW
 opcode for 32-bit load in both RV32I and RV64I. The very first versions
 of RISC-V ISA did have a variant of this alternate design, but the
 RISC-V design was changed to the current choice in January 2011. Our
-focus was on supporting 32-bit integers in the 64-bit ISA not on
+focus was on supporting 32-bit integers in the 64-bit ISA, not on
 providing compatibility with the 32-bit ISA, and the motivation was to
 remove the asymmetry that arose from having not all opcodes in RV32I
 have a *W suffix (e.g., ADDW, but AND not ANDW). In hindsight, this was
@@ -355,13 +355,13 @@ regardless of any subsequent extensions.
 
 
 A RISC-V hart has a single byte-addressable address space of
-latexmath:[$2^{\text{XLEN}}$] bytes for all memory accesses. A _word_ of
+2^XLEN^ bytes for all memory accesses. A _word_ of
 memory is defined as 32{nbsp}bits (4{nbsp}bytes). Correspondingly, a _halfword_ is 16{nbsp}bits (2{nbsp}bytes), a
 _doubleword_ is 64{nbsp}bits (8{nbsp}bytes), and a _quadword_ is 128{nbsp}bits (16{nbsp}bytes). The memory address space is
-circular, so that the byte at address latexmath:[$2^{\text{XLEN}}-1$] is
+circular, so that the byte at address 2^XLEN^−1 is
 adjacent to the byte at address zero. Accordingly, memory address
 computations done by the hardware ignore overflow and instead wrap
-around modulo latexmath:[$2^{\text{XLEN}}$].
+around modulo 2^XLEN^.
 
 The execution environment determines the mapping of hardware resources
 into a hart's address space. Different address ranges of a hart's
@@ -497,7 +497,7 @@ uses less than 1/8 of the encoding space in the 32-bit instruction word.
 An implementation that does not require support
 for the standard compressed instruction extension can map 3 additional non-conforming
 30-bit instruction spaces into the 32-bit fixed-width format, while preserving
-support for standard &#8805;32-bit instruction-set
+support for standard {ge}32-bit instruction-set
 extensions.
 ====
 

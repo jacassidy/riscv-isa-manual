@@ -16,8 +16,8 @@ in Volume I. In this chapter, we map out the CSR address space. The
 following chapters describe the function of each of the CSRs according
 to privilege level, as well as the other privileged instructions which
 are generally closely associated with a particular privilege level. Note
-that although CSRs and instructions are associated with one privilege
-level, they are also accessible at all higher privilege levels.
+that [#norm:Zicsr_higher_priv]#although CSRs and instructions are associated with one privilege
+level, they are also accessible at all higher privilege levels.#
 
 Standard CSRs do not have side effects on reads but may have side
 effects on writes.
@@ -27,7 +27,8 @@ effects on writes.
 The standard RISC-V ISA sets aside a 12-bit encoding space (csr[11:0])
 for up to 4,096 CSRs. By convention, the upper 4 bits of the CSR address
 (csr[11:8]) are used to encode the read and write accessibility of the
-CSRs according to privilege level as shown in <<csrrwpriv>>. The top two bits (csr[11:10]) indicate whether the register is read/write (`00`,`01`, or `10`) or read-only (`11`). The next two bits (csr[9:8]) encode the lowest privilege level that can access the CSR.
+CSRs according to privilege level as shown in <<csrrwpriv>>. [#norm:Zicsr_rw]#The top two bits (csr[11:10]) indicate whether the register is read/write (`00`,`01`, or `10`) or read-only (`11`).#
+[#norm:Zicsr_access]#The next two bits (csr[9:8]) encode the lowest privilege level that can access the CSR, with the pattern `10` representing hypervisor CSRs.#
 
 [NOTE]
 ====
@@ -43,12 +44,12 @@ less-privileged software.
 ====
 
 Instructions that access a non-existent CSR are reserved.
-Attempts to access a CSR without appropriate privilege level
+[#norm:Zicsr_illegal_mode]#Attempts to access a CSR without appropriate privilege level
 raise illegal-instruction exceptions or, as described in
-<<sec:hcauses>>, virtual-instruction exceptions.
-Attempts to write a read-only register raise illegal-instruction exceptions.
-A read/write register might also contain some bits that are
-read-only, in which case writes to the read-only bits are ignored.
+<<sec:hcauses>>, virtual-instruction exceptions.#
+[#norm:Zicsr_illegal_acc]#Attempts to write a read-only register raise illegal-instruction exceptions.#
+[#norm:Zicwr_write_ro]#A read/write register might also contain some bits that are
+read-only, in which case writes to the read-only bits are ignored.#
 
 <<csrrwpriv>> also indicates the convention to
 allocate CSR addresses between standard and custom uses. The CSR
@@ -57,9 +58,10 @@ standard extensions.
 
 Machine-mode standard read-write CSRs `0x7A0`-`0x7BF` are reserved for
 use by the debug system. Of these CSRs, `0x7A0`-`0x7AF` are accessible
-to machine mode, whereas `0x7B0`-`0x7BF` are only visible to debug mode.
+to machine mode, whereas
+[#norm:Zicsr_debug-illegal]#`0x7B0`-`0x7BF` are only visible to debug mode.
 Implementations should raise illegal-instruction exceptions on
-machine-mode access to the latter set of registers.
+machine-mode access to the latter set of registers.#
 
 [NOTE]
 ====
@@ -71,14 +73,6 @@ if they are made read-write at a higher privilege level. This avoids
 trapping permitted lower-privilege accesses while still causing traps on
 illegal accesses. Currently, the counters are the only shadowed CSRs.
 ====
-
-=== CSR Listing
-
-<<ucsrnames>>-<<mcsrnames1>> list the CSRs that
-have currently been allocated CSR addresses. The timers, counters, and
-floating-point CSRs are standard unprivileged CSRs. The other registers
-are used by privileged code, as described in the following chapters.
-Note that not all registers are required on all implementations.
 
 [[csrrwpriv]]
 .Allocation of RISC-V CSR address ranges.
@@ -132,6 +126,16 @@ m|00 m|00 m|XXXX 2+m| 0x000-0x0FF 3+|Standard read/write
 |===
 
 <<<
+
+=== CSR Listing
+
+<<ucsrnames>>-<<mcsrnames>> list the CSRs that
+have currently been allocated CSR addresses. The timers, counters, and
+floating-point CSRs are standard unprivileged CSRs. The other registers
+are used by privileged code, as described in the following chapters.
+Note that not all registers are required on all implementations.
+
+==== Currently allocated RISC-V unprivileged CSR addresses
 
 [[ucsrnames]]
 .Currently allocated RISC-V unprivileged CSR addresses.
@@ -209,60 +213,62 @@ Vector register length in bytes.
 `0xC02` +
 `0xC03` +
 `0xC04` +
- &#160; +
+ {nbsp} +
 `0xC1F` +
 `0xC80` +
 `0xC81` +
 `0xC82` +
 `0xC83` +
 `0xC84` +
-&#160; +
+{nbsp} +
 `0xC9F`
 |URO +
 URO +
 URO +
 URO +
 URO +
-&#160; +
+{nbsp} +
 URO +
 URO +
 URO +
 URO +
 URO +
 URO +
-&#160; +
+{nbsp} +
 URO
 |`cycle` +
 `time` +
 `instret` +
 `hpmcounter3` +
 `hpmcounter4` +
-&#8942; +
+{vertical-ellipsis} +
 `hpmcounter31` +
 `cycleh` +
 `timeh` +
 `instreth` +
 `hpmcounter3h` +
 `hpmcounter4h` +
-&#8942; +
+{vertical-ellipsis} +
 `hpmcounter31h`
 |Cycle counter for RDCYCLE instruction. +
 Timer for RDTIME instruction. +
 Instructions-retired counter for RDINSTRET instruction. +
 Performance-monitoring counter. +
 Performance-monitoring counter. +
-&#160; +
+{nbsp} +
 Performance-monitoring counter. +
 Upper 32 bits of `cycle`, RV32 only. +
 Upper 32 bits of `time`, RV32 only. +
 Upper 32 bits of `instret`, RV32 only. +
 Upper 32 bits of `hpmcounter3`, RV32 only. +
 Upper 32 bits of `hpmcounter4`, RV32 only. +
-&#160; +
+{nbsp} +
 Upper 32 bits of `hpmcounter31`, RV32 only.
 |===
 
 <<<
+
+==== Currently allocated RISC-V supervisor-level CSR addresses
 
 [[scsrnames]]
 .Currently allocated RISC-V supervisor-level CSR addresses.
@@ -411,6 +417,8 @@ Upper 32 bits of `stimecmp`, RV32 only.
 |===
 
 <<<
+
+==== Currently allocated RISC-V hypervisor and VS CSR addresses
 
 [[hcsrnames]]
 .Currently allocated RISC-V hypervisor and VS CSR addresses.
@@ -626,7 +634,9 @@ Upper 32 bits of `vstimecmp`, RV32 only.
 
 <<<
 
-[[mcsrnames0]]
+==== Currently allocated RISC-V machine-level CSR addresses
+
+[[mcsrnames]]
 [.monocell]
 .Currently allocated RISC-V machine-level CSR addresses.
 [%autowidth,float="center",align="center",cols="<,<,<,<",options="header"]
@@ -693,25 +703,6 @@ Machine trap-handler base address. +
 Machine counter enable. +
 Additional machine status register, RV32 only. +
 Upper 32 bits of `medeleg`, RV32 only.
-
-4+^|Machine Counter Configuration
-
-|`0x321` +
-`0x322` +
-`0x721` +
-`0x722`
-|MRW +
-MRW +
-MRW +
-MRW
-|`mcyclecfg` +
-`minstretcfg` +
-`mcyclecfgh` +
-`minstretcfgh`
-|Machine cycle counter configuration register. +
-Machine instret counter configuration register. +
-Upper 32 bits of `mcyclecfg`, RV32 only. +
-Upper 32 bits of `minstretcfg`, RV32 only.
 
 4+^|Machine Trap Handling
 
@@ -800,45 +791,45 @@ Upper 32 bits of `mseccfg`, RV32 only.
 `0x3A1` +
 `0x3A2` +
 `0x3A3` +
-&#160; +
+{nbsp} +
 `0x3AE` +
 `0x3AF` +
 `0x3B0` +
 `0x3B1` +
-&#160; +
+{nbsp} +
 `0x3EF`
 |MRW +
 MRW +
 MRW +
 MRW +
-&#160; +
+{nbsp} +
 MRW +
 MRW +
 MRW +
 MRW +
-&#160; +
+{nbsp} +
 MRW
 |`pmpcfg0` +
 `pmpcfg1` +
 `pmpcfg2` +
 `pmpcfg3` +
-&#8943; +
+{ellipsis} +
 `pmpcfg14` +
 `pmpcfg15` +
 `pmpaddr0` +
 `pmpaddr1` +
-&#8943; +
+{ellipsis} +
 `pmpaddr63`
 |Physical memory protection configuration. +
 Physical memory protection configuration, RV32 only. +
 Physical memory protection configuration. +
 Physical memory protection configuration, RV32 only. +
-&#160; +
+{nbsp} +
 Physical memory protection configuration. +
 Physical memory protection configuration, RV32 only. +
 Physical memory protection address register. +
 Physical memory protection address register. +
-&#160; +
+{nbsp} +
 Physical memory protection address register.
 
 4+^|Machine State Enable Registers
@@ -874,15 +865,7 @@ Physical memory protection address register.
  Upper 32 bits of Machine State Enable 1 Register, RV32 only. +
  Upper 32 bits of Machine State Enable 2 Register, RV32 only. +
  Upper 32 bits of Machine State Enable 3 Register, RV32 only.
-|===
 
-<<<
-
-[[mcsrnames1]]
-.Currently allocated RISC-V machine-level CSR addresses.
-[%autowidth,float="center",align="center",cols="<,<,<,<",options="header"]
-|===
-|Number |Privilege |Name |Description
 4+^|Machine Non-Maskable Interrupt Handling
 
 |`0x740` +
@@ -908,88 +891,104 @@ Resumable NMI status.
 `0xB02` +
 `0xB03` +
 `0xB04` +
-&#160; +
+{nbsp} +
 `0xB1F` +
 `0xB80` +
 `0xB82` +
 `0xB83` +
 `0xB84` +
-&#160; +
+{nbsp} +
 `0xB9F`
 |MRW +
 MRW +
 MRW +
 MRW +
-&#160; +
+{nbsp} +
 MRW +
 MRW +
 MRW +
 MRW +
 MRW +
-&#160; +
+{nbsp} +
 MRW +
 |`mcycle` +
 `minstret` +
 `mhpmcounter3` +
 `mhpmcounter4` +
-&#8942; +
+{vertical-ellipsis} +
 `mhpmcounter31` +
 `mcycleh` +
 `minstreth` +
 `mhpmcounter3h` +
 `mhpmcounter4h` +
-&#8942;
+{vertical-ellipsis} +
 `mhpmcounter31h`
 |Machine cycle counter. +
 Machine instructions-retired counter. +
 Machine performance-monitoring counter. +
 Machine performance-monitoring counter. +
-&#160; +
+{nbsp} +
 Machine performance-monitoring counter. +
 Upper 32 bits of `mcycle`, RV32 only. +
 Upper 32 bits of `minstret`, RV32 only. +
 Upper 32 bits of `mhpmcounter3`, RV32 only. +
 Upper 32 bits of `mhpmcounter4`, RV32 only. +
-&#160; +
+{nbsp} +
 Upper 32 bits of `mhpmcounter31`, RV32 only.
 
 4+^|Machine Counter Setup
 
 |`0x320` +
+`0x321` +
+`0x322` +
 `0x323` +
 `0x324` +
-&#160; +
+{nbsp} +
 `0x33F` +
+`0x721` +
+`0x722` +
 `0x723` +
 `0x724` +
-&#160; +
+{nbsp} +
 `0x73F`
 |MRW +
 MRW +
 MRW +
-&#160; +
+MRW +
+MRW +
+{nbsp} +
 MRW +
 MRW +
 MRW +
-&#160; +
+MRW +
+MRW +
+{nbsp} +
 MRW
 |`mcountinhibit` +
+`mcyclecfg` +
+`minstretcfg` +
 `mhpmevent3` +
 `mhpmevent4` +
-&#8942; +
+{vertical-ellipsis} +
 `mhpmevent31` +
+`mcyclecfgh` +
+`minstretcfgh` +
 `mhpmevent3h` +
 `mhpmevent4h` +
-&#8942; +
+{vertical-ellipsis} +
 `mhpmevent31h`
 |Machine counter-inhibit register. +
+Machine cycle counter configuration register. +
+Machine instret counter configuration register. +
 Machine performance-monitoring event selector. +
 Machine performance-monitoring event selector. +
-&#160; +
+{nbsp} +
 Machine performance-monitoring event selector. +
+Upper 32 bits of `mcyclecfg`, RV32 only. +
+Upper 32 bits of `minstretcfg`, RV32 only. +
 Upper 32 bits of `mhpmevent3`, RV32 only. +
 Upper 32 bits of `mhpmevent4`, RV32 only. +
-&#160; +
+{nbsp} +
 Upper 32 bits of `mhpmevent31`, RV32 only.
 
 4+^|Machine Control Transfer Records Configuration
@@ -1041,6 +1040,10 @@ Debug program counter. +
 Debug scratch register 0. +
 Debug scratch register 1.
 |===
+
+<<<
+
+==== Currently allocated RISC-V indirect CSR (Smcsrind) mappings
 
 [[indcsrs-m]]
 .Currently allocated RISC-V indirect CSR (Smcsrind) mappings - M-mode
@@ -1130,9 +1133,9 @@ behavior of fields within the CSRs.
 Some whole read/write fields are reserved for future use. Software
 should ignore the values read from these fields, and should preserve the
 values held in these fields when writing values to other fields of the
-same register. For forward compatibility, implementations that do not
+same register. [#norm:Zicsr_wpri_roz]#For forward compatibility, implementations that do not
 furnish these fields must make them read-only zero. These fields are
-labeled *WPRI* in the register descriptions.
+labeled *WPRI* in the register descriptions.#
 
 [NOTE]
 ====
@@ -1148,12 +1151,13 @@ general that can be problematic if intermediate values are not legal.
 ==== Write/Read Only Legal Values (WLRL)
 
 Some read/write CSR fields specify behavior for only a subset of
-possible bit encodings, with other bit encodings reserved. Software
+possible bit encodings, with other bit encodings reserved.
+[#norm:Zicsr_wlrl]#Software
 should not write anything other than legal values to such a field, and
 should not assume a read will return a legal value unless the last write
 was of a legal value, or the register has not been written since another
 operation (e.g., reset) set the register to a legal value. These fields
-are labeled *WLRL* in the register descriptions.
+are labeled *WLRL* in the register descriptions.#
 
 [NOTE]
 ====
@@ -1162,9 +1166,10 @@ differentiate between the supported values, but must always return the
 complete specified bit-encoding of any supported value when read.
 ====
 
-Implementations are permitted but not required to raise an
+[#norm:Zicsr_wlrl_exception]#Implementations are permitted but not required to raise an
 illegal-instruction exception if an instruction attempts to write a
-non-supported value to a *WLRL* field. Implementations can return arbitrary
+non-supported value to a *WLRL* field.#
+Implementations can return arbitrary
 bit patterns on the read of a *WLRL* field when the last write was of an
 illegal value, but the value returned should deterministically depend on
 the illegal written value and the value of the field prior to the write.
@@ -1178,8 +1183,9 @@ other side effects, the range of supported values can be determined by
 attempting to write a desired setting then reading to see if the value
 was retained. These fields are labeled *WARL* in the register descriptions.
 
-Implementations will not raise an exception on writes of unsupported
-values to a *WARL* field. Implementations can return any legal value on the
+
+[#norm:Zicsr_warl]#Implementations will not raise an exception on writes of unsupported
+values to a *WARL* field.# Implementations can return any legal value on the
 read of a *WARL* field when the last write was of an illegal value, but the
 legal value returned should deterministically depend on the illegal
 written value and the architectural state of the hart.

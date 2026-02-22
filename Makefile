@@ -37,19 +37,21 @@ else
 endif
 
 DATE ?= $(shell date +%Y%m%d)
-SKIP_DOCKER ?= $(shell if command -v docker >/dev/null 2>&1 ; then echo false; else echo true; fi)
-DOCKER_IMG := riscvintl/riscv-docs-base-container-image:latest
+DOCKER_BIN ?= docker
+SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
+DOCKER_IMG := ghcr.io/riscv/riscv-docs-base-container-image:latest
 ifneq ($(SKIP_DOCKER),true)
     DOCKER_IS_PODMAN = \
-        $(shell ! docker -v | grep podman >/dev/null ; echo $$?)
+        $(shell ! ${DOCKER_BIN}  -v | grep podman >/dev/null ; echo $$?)
     ifeq "$(DOCKER_IS_PODMAN)" "1"
         # Modify the SELinux label for the host directory to indicate
         # that it can be shared with multiple containers. This is apparently
         # only required for Podman, though it is also supported by Docker.
         DOCKER_VOL_SUFFIX = :z
+        DOCKER_EXTRA_VOL_SUFFIX = ,z
     else
         DOCKER_IS_ROOTLESS = \
-            $(shell ! docker info -f '{{println .SecurityOptions}}' | grep rootless >/dev/null ; echo $$?)
+            $(shell ! ${DOCKER_BIN} info -f '{{println .SecurityOptions}}' | grep rootless >/dev/null ; echo $$?)
         ifneq "$(DOCKER_IS_ROOTLESS)" "1"
             # Rooted Docker requires this flag so that the files it creates are
             # owned by the current user instead of root. Rootless docker does not
@@ -59,10 +61,11 @@ ifneq ($(SKIP_DOCKER),true)
     endif
 
     DOCKER_CMD = \
-        docker run --rm \
+        ${DOCKER_BIN} run --rm \
             -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
-            -v ${PWD}/src:/src:ro \
-            -v ${PWD}/docs-resources:/docs-resources:ro \
+            -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/normative_rule_defs:/normative_rule_defs:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
             $(DOCKER_USER_ARG) \
             ${DOCKER_IMG} \
@@ -74,13 +77,13 @@ else
 endif
 
 ifdef UNRELIABLE_BUT_FASTER_INCREMENTAL_BUILDS
-WORKDIR_SETUP = mkdir -p $@.workdir && ln -sfn ../../src ../../docs-resources $@.workdir/
+WORKDIR_SETUP = mkdir -p $@.workdir && ln -sfn ../../src ../../normative_rule_defs ../../docs-resources $@.workdir/
 WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
 else
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
     mkdir -p $@.workdir && \
-    ln -sfn ../../src ../../docs-resources $@.workdir/
+    ln -sfn ../../src ../../normative_rule_defs ../../docs-resources $@.workdir/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
@@ -89,11 +92,15 @@ endif
 
 SRC_DIR := src
 BUILD_DIR := build
+NORM_RULE_DEF_DIR := normative_rule_defs
+DOC_NORM_TAG_SUFFIX := -norm-tags.json
 
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
 DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
 DOCS_EPUB := $(addprefix $(BUILD_DIR)/, $(addsuffix .epub, $(DOCS)))
-DOCS_NORM_TAGS := $(addprefix $(BUILD_DIR)/, $(addsuffix -norm-tags.json, $(DOCS)))
+DOCS_NORM_TAGS := $(addprefix $(BUILD_DIR)/, $(addsuffix $(DOC_NORM_TAG_SUFFIX), $(DOCS)))
+NORM_RULES_JSON := $(BUILD_DIR)/norm-rules.json
+NORM_RULES_HTML := $(BUILD_DIR)/norm-rules.html
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -102,6 +109,8 @@ ASCIIDOCTOR_PDF := $(ENV) asciidoctor-pdf
 ASCIIDOCTOR_HTML := $(ENV) asciidoctor
 ASCIIDOCTOR_EPUB := $(ENV) asciidoctor-epub3
 ASCIIDOCTOR_TAGS := $(ENV) asciidoctor --backend tags --require=./docs-resources/converters/tags.rb
+CREATE_NORM_RULE_TOOL := docs-resources/tools/create_normative_rules.rb
+CREATE_NORM_RULE_RUBY := ruby $(CREATE_NORM_RULE_TOOL)
 
 OPTIONS := --trace \
            -a compress \
@@ -114,21 +123,22 @@ OPTIONS := --trace \
            -a docinfo=shared \
            $(XTRA_ADOC_OPTS) \
            -D build \
-           --failure-level=ERROR
+           --failure-level=WARN
 REQUIRES := --require=asciidoctor-bibtex \
             --require=asciidoctor-diagram \
             --require=asciidoctor-lists \
             --require=asciidoctor-mathematical \
             --require=asciidoctor-sail
 
-.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html build-epub build-tags submodule-check
+.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html build-epub build-tags docker-pull-latest submodule-check
+.PHONY: build-norm-rules build-norm-rules-json build-norm-rules-html check-tags update-ref
 
 all: build
 
 # Check if the docs-resources/global-config.adoc file exists. If not, the user forgot to check out submodules.
 ifeq ("$(wildcard docs-resources/global-config.adoc)","")
   $(warning You must clone with --recurse-submodules to automatically populate the submodule 'docs-resources'.")
-  $(warning Checking out submodules for you via 'git submodule update --init --recurse'...)
+  $(warning Checking out submodules for you via 'git submodule update --init --recursive'...)
   $(shell git submodule update --init --recursive)
 endif
 
@@ -136,23 +146,50 @@ build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
 build-epub: $(DOCS_EPUB)
 build-tags: $(DOCS_NORM_TAGS)
-build: build-pdf build-html build-epub build-tags
+check-tags:
+	@bash ./scripts/check-tag-changes.sh
+
+# Copy built normative tags JSON files to ref directory and use sed to ensure they end with a newline.
+# Required by GitHub pre-commit checks for this repo.
+update-ref: $(DOCS_NORM_TAGS)
+	cp -f $(DOCS_NORM_TAGS) ref
+	sed -i -e '$$a\' ref/*.json
+
+build-norm-rules-json: $(NORM_RULES_JSON)
+build-norm-rules-html: $(NORM_RULES_HTML)
+build-norm-rules: build-norm-rules-json build-norm-rules-html check-tags
+build: build-pdf build-html build-epub build-tags build-norm-rules-json build-norm-rules-html
 
 ALL_SRCS := $(shell git ls-files $(SRC_DIR))
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_DIR)/%-norm-tags.json
+# All normative rule definition input YAML files.
+NORM_RULE_DEF_FILES := $(wildcard $(NORM_RULE_DEF_DIR)/*.yaml)
+
+# Add -t to each normative tag input filename and add prefix of "/" to make into absolute pathname.
+NORM_TAG_FILE_ARGS := $(foreach relative_pname,$(DOCS_NORM_TAGS),-t /$(relative_pname))
+
+# Add -d to each normative rule definition filename
+NORM_RULE_DEF_ARGS := $(foreach relative_pname,$(NORM_RULE_DEF_FILES),-d $(relative_pname))
+
+# Provide mapping from an ISA manual's norm tags JSON file to a URL that one can link to. Used to create links into ISA manual.
+NORM_RULE_DOC2URL_ARGS := $(foreach doc_name,$(DOCS),-tag2url /$(BUILD_DIR)/$(doc_name)$(DOC_NORM_TAG_SUFFIX) $(doc_name).html)
+
+# Temporarily make errors warnings. Don't check this in uncommented.
+# NORM_RULE_DEF_ARGS := $(NORM_RULE_DEF_ARGS) -w
+
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_DIR)/%-norm-tags.json
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.epub: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_DIR)/%-norm-tags.json
+$(BUILD_DIR)/%.epub: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_EPUB) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
@@ -163,9 +200,23 @@ $(BUILD_DIR)/%-norm-tags.json: $(SRC_DIR)/%.adoc $(ALL_SRCS) docs-resources/conv
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_TAGS) $(OPTIONS) -a tags-match-prefix='norm:' -a tags-output-suffix='-norm-tags.json' $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 
+$(NORM_RULES_JSON): $(DOCS_NORM_TAGS) $(NORM_RULE_DEF_FILES) $(CREATE_NORM_RULE_TOOL)
+	$(WORKDIR_SETUP)
+	cp -f $(DOCS_NORM_TAGS) $@.workdir
+	mkdir -p $@.workdir/build
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_NORM_RULE_RUBY) -j $(NORM_TAG_FILE_ARGS) $(NORM_RULE_DEF_ARGS) $(NORM_RULE_DOC2URL_ARGS) $@ $(DOCKER_QUOTE)
+	$(WORKDIR_TEARDOWN)
+
+$(NORM_RULES_HTML): $(DOCS_NORM_TAGS) $(NORM_RULE_DEF_FILES) $(CREATE_NORM_RULE_TOOL) $(DOCS_HTML)
+	$(WORKDIR_SETUP)
+	cp -f $(DOCS_NORM_TAGS) $@.workdir
+	mkdir -p $@.workdir/build
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_NORM_RULE_RUBY) -h $(NORM_TAG_FILE_ARGS) $(NORM_RULE_DEF_ARGS) $(NORM_RULE_DOC2URL_ARGS) $@ $(DOCKER_QUOTE)
+	$(WORKDIR_TEARDOWN)
+
 # Update docker image to latest
 docker-pull-latest:
-	docker pull ${DOCKER_IMG}
+	${DOCKER_BIN} pull ${DOCKER_IMG}
 
 clean:
 	@echo "Cleaning up generated files..."

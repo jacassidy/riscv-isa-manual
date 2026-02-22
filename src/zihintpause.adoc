@@ -1,8 +1,8 @@
 [[zihintpause]]
 == "Zihintpause" Extension for Pause Hint, Version 2.0
-The PAUSE instruction is a HINT that indicates the current hart's rate
+[#norm:pause_op]#The PAUSE instruction is a HINT that indicates the current hart's rate
 of instruction retirement should be temporarily reduced or paused. The
-duration of its effect must be bounded and may be zero.
+duration of its effect must be bounded and may be zero.#
 (((PAUSE, HINT)))
 (((HINT, PAUSE)))
 
@@ -14,13 +14,6 @@ temporarily relinquish execution resources to other harts when PAUSE is
 executed. It is recommended that a PAUSE instruction generally be
 included in the code sequence for a spin-wait loop.
 (((PAUSE, energy consumption)))
-
-A future extension might add primitives similar to the x86 MONITOR/MWAIT
-instructions, which provide a more efficient mechanism to wait on writes
-to a specific memory location. However, these instructions would not
-supplant PAUSE. PAUSE is more appropriate when polling for non-memory
-events, when polling for multiple events, or when software does not know
-precisely what events it is polling for.
 
 The duration of a PAUSE instruction's effect may vary significantly
 within and among implementations. In typical implementations this
@@ -37,8 +30,8 @@ longer than optimal on some implementations, degrading system
 performance.
 ====
 
-PAUSE is encoded as a FENCE instruction with _pred_=`W`, _succ_=`0`, _fm_=`0`,
-_rd_=`x0`, and _rs1_=`x0`.
+[#norm:pause_enc_fence]#PAUSE is encoded as a FENCE instruction with _pred_=`W`, _succ_=`0`, _fm_=`0`,
+_rd_=`x0`, and _rs1_=`x0`.#
 
 //include::images/wavedrom/zihintpause-hint.edn[]
 //[zihintpause-hint]

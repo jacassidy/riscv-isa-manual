@@ -1,27 +1,13 @@
 [[crypto_scalar_instructions]]
 == Cryptography Extensions: Scalar & Entropy Source Instructions, Version 1.0.1
 
-=== Changelog
-
-[cols="1,5"]
-|===
-| Version | Changes
-
-| `v1.0.1`
-| Fix typos to show that
-  `c.srli`, `c.srai`, and `c.slli` are Zkt instructions in RV64.
-
-| `v1.0.0`
-| Initial Release
-|===
-
 [[crypto_scalar_introduction]]
 === Introduction
 
 This document describes the _scalar_ cryptography
 extension for RISC-V.
-All instructions described herein use the general-purpose `X`
-registers, and obey the 2-read-1-write register access constraint.
+[#norm:zk_scalar_xreg_op]#All instructions described herein use the general-purpose `X`
+registers, and obey the 2-read-1-write register access constraint.#
 These instructions are designed to be lightweight and suitable
 for `32` and `64` bit base architectures; from embedded IoT class
 cores to large, application class cores which do not implement a
@@ -202,14 +188,14 @@ operate in. NIST ciphers are a part of most standardised internet
 protocols, while ShangMi ciphers are required for use in China.
 ====
 
-[[zbkb-sc,Zbkb-sc]]
+[[zbkb-sc,Zbkb]]
 ==== `Zbkb` - Bitmanip instructions for Cryptography
 
 This extension contains bit-manipulation instructions that are particularly
 useful for cryptography, most of which are also in the `Zbb` extension.
 Please refer to <<b-st-ext.adoc#zbkb>>.
 
-[[zbkc-sc,Zbkc-sc]]
+[[zbkc-sc,Zbkc]]
 ==== `Zbkc` - Carry-less multiply instructions
 
 Constant time carry-less multiply for Galois/Counter Mode.
@@ -219,7 +205,7 @@ across other instructions.
 
 Please refer to <<b-st-ext.adoc#zbkc>>.
 
-[[zbkx-sc,Zbkx-sc]]
+[[zbkx-sc,Zbkx]]
 ==== `Zbkx` - Crossbar permutation instructions
 
 These instructions are useful for implementing SBoxes in constant time, and
@@ -243,17 +229,17 @@ the AES block cipher.
 |Mnemonic
 |Instruction
 
-| &#10003; |          | aes32dsi     | <<insns-aes32dsi>>
-| &#10003; |          | aes32dsmi    | <<insns-aes32dsmi>>
-|          | &#10003; | aes64ds      | <<insns-aes64ds>>
-|          | &#10003; | aes64dsm     | <<insns-aes64dsm>>
-|          | &#10003; | aes64im      | <<insns-aes64im>>
-|          | &#10003; | aes64ks1i    | <<insns-aes64ks1i>>
-|          | &#10003; | aes64ks2     | <<insns-aes64ks2>>
+| {check} |          | aes32dsi     | <<insns-aes32dsi>>
+| {check} |          | aes32dsmi    | <<insns-aes32dsmi>>
+|          | {check} | aes64ds      | <<insns-aes64ds>>
+|          | {check} | aes64dsm     | <<insns-aes64dsm>>
+|          | {check} | aes64im      | <<insns-aes64im>>
+|          | {check} | aes64ks1i    | <<insns-aes64ks1i>>
+|          | {check} | aes64ks2     | <<insns-aes64ks2>>
 |===
 
-NOTE: The <<insns-aes64ks1i>> and <<insns-aes64ks2>> instructions are
-present in both the <<zknd>> and <<zkne>> extensions.
+[#norm:zknd_shared_instr]#NOTE: The <<insns-aes64ks1i>> and <<insns-aes64ks2>> instructions are
+present in both the <<zknd>> and <<zkne>> extensions.#
 
 [[zkne,Zkne]]
 ==== `Zkne` - NIST Suite: AES Encryption
@@ -268,19 +254,19 @@ the AES block cipher.
 |Mnemonic
 |Instruction
 
-| &#10003; |          | aes32esi     | <<insns-aes32esi>>
-| &#10003; |          | aes32esmi    | <<insns-aes32esmi>>
-|          | &#10003; | aes64es      | <<insns-aes64es>>
-|          | &#10003; | aes64esm     | <<insns-aes64esm>>
-|          | &#10003; | aes64ks1i    | <<insns-aes64ks1i>>
-|          | &#10003; | aes64ks2     | <<insns-aes64ks2>>
+| {check} |          | aes32esi     | <<insns-aes32esi>>
+| {check} |          | aes32esmi    | <<insns-aes32esmi>>
+|          | {check} | aes64es      | <<insns-aes64es>>
+|          | {check} | aes64esm     | <<insns-aes64esm>>
+|          | {check} | aes64ks1i    | <<insns-aes64ks1i>>
+|          | {check} | aes64ks2     | <<insns-aes64ks2>>
 |===
 
-NOTE: The
+[#norm:zkne_shared_instr]#NOTE: The
 <<insns-aes64ks1i,`aes64ks1i`>>
 and
 <<insns-aes64ks2,`aes64ks2`>>
-instructions are present in both the <<zknd>> and <<zkne>> extensions.
+instructions are present in both the <<zknd>> and <<zkne>> extensions.#
 
 [[zknh,Zknh]]
 ==== `Zknh` - NIST Suite: Hash Function Instructions
@@ -295,20 +281,20 @@ as specified in cite:[nist:fips:180:4].
 |Mnemonic
 |Instruction
 
-| &#10003; | &#10003; | sha256sig0   | <<insns-sha256sig0>>
-| &#10003; | &#10003; | sha256sig1   | <<insns-sha256sig1>>
-| &#10003; | &#10003; | sha256sum0   | <<insns-sha256sum0>>
-| &#10003; | &#10003; | sha256sum1   | <<insns-sha256sum1>>
-| &#10003; |          | sha512sig0h  | <<insns-sha512sig0h>>
-| &#10003; |          | sha512sig0l  | <<insns-sha512sig0l>>
-| &#10003; |          | sha512sig1h  | <<insns-sha512sig1h>>
-| &#10003; |          | sha512sig1l  | <<insns-sha512sig1l>>
-| &#10003; |          | sha512sum0r  | <<insns-sha512sum0r>>
-| &#10003; |          | sha512sum1r  | <<insns-sha512sum1r>>
-|          | &#10003; | sha512sig0   | <<insns-sha512sig0>>
-|          | &#10003; | sha512sig1   | <<insns-sha512sig1>>
-|          | &#10003; | sha512sum0   | <<insns-sha512sum0>>
-|          | &#10003; | sha512sum1   | <<insns-sha512sum1>>
+| {check} | {check} | sha256sig0   | <<insns-sha256sig0>>
+| {check} | {check} | sha256sig1   | <<insns-sha256sig1>>
+| {check} | {check} | sha256sum0   | <<insns-sha256sum0>>
+| {check} | {check} | sha256sum1   | <<insns-sha256sum1>>
+| {check} |          | sha512sig0h  | <<insns-sha512sig0h>>
+| {check} |          | sha512sig0l  | <<insns-sha512sig0l>>
+| {check} |          | sha512sig1h  | <<insns-sha512sig1h>>
+| {check} |          | sha512sig1l  | <<insns-sha512sig1l>>
+| {check} |          | sha512sum0r  | <<insns-sha512sum0r>>
+| {check} |          | sha512sum1r  | <<insns-sha512sum1r>>
+|          | {check} | sha512sig0   | <<insns-sha512sig0>>
+|          | {check} | sha512sig1   | <<insns-sha512sig1>>
+|          | {check} | sha512sum0   | <<insns-sha512sum0>>
+|          | {check} | sha512sum1   | <<insns-sha512sum1>>
 |===
 
 [[zksed,Zksed]]
@@ -326,8 +312,8 @@ extension for it.
 |Mnemonic
 |Instruction
 
-| &#10003; | &#10003; | sm4ed        | <<insns-sm4ed>>
-| &#10003; | &#10003; | sm4ks        | <<insns-sm4ks>>
+| {check} | {check} | sm4ed        | <<insns-sm4ed>>
+| {check} | {check} | sm4ks        | <<insns-sm4ks>>
 |===
 
 [[zksh,Zksh]]
@@ -342,13 +328,14 @@ Instructions for accelerating the SM3 hash function.
 |Mnemonic
 |Instruction
 
-| &#10003; | &#10003; | sm3p0        | <<insns-sm3p0>>
-| &#10003; | &#10003; | sm3p1        | <<insns-sm3p1>>
+| {check} | {check} | sm3p0        | <<insns-sm3p0>>
+| {check} | {check} | sm3p1        | <<insns-sm3p1>>
 |===
 
 [[zkr,Zkr]]
 ==== `Zkr` - Entropy Source Extension
 
+[[norm:zkr_seed_addr]]
 The entropy source extension defines the `seed` CSR at address `0x015`.
 This CSR provides up to 16 physical `entropy` bits that can be used to
 seed cryptographic random bit generators.
@@ -375,6 +362,7 @@ This extension is shorthand for the following set of other extensions:
 | <<zknh>>  | SHA2 hash function instructions.
 |===
 
+[[norm:zkn_impl_all]]
 A core which implements `Zkn` must implement all of the above extensions.
 
 [[zks,Zks]]
@@ -394,6 +382,7 @@ This extension is shorthand for the following set of other extensions:
 | <<zksh>>  | SM3 hash function instructions.
 |===
 
+[[norm:zks_impl_all]]
 A core which implements `Zks` must implement all of the above extensions.
 
 [[zk,Zk]]
@@ -411,6 +400,7 @@ This extension is shorthand for the following set of other extensions:
 | <<crypto_scalar_zkt,Zkt>>  | Data independent execution latency extension.
 |===
 
+[[norm:zk_impl_all]]
 A core which implements `Zk` must implement all of the above extensions.
 
 ==== `Zkt` - Data Independent Execution Latency
@@ -436,6 +426,7 @@ AES final round decryption instruction for RV32.
 Mnemonic::
 aes32dsi rd, rs1, rs2, bs
 
+[[norm:aes32dsi_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -457,6 +448,7 @@ To this it applies the inverse AES SBox operation, and XOR's the result with
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:aes32dsi_op]]
 Operation::
 [source,sail]
 --
@@ -498,6 +490,7 @@ AES middle round decryption instruction for RV32.
 Mnemonic::
 aes32dsmi rd, rs1, rs2, bs
 
+[[norm:aes32dsmi_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -519,6 +512,7 @@ MixColumn, before XOR'ing the result with `rs1`.
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:aes32dsmi_op]]
 Operation::
 [source,sail]
 --
@@ -561,6 +555,7 @@ AES final round encryption instruction for RV32.
 Mnemonic::
 aes32esi rd, rs1, rs2, bs
 
+[[norm:aes32esi_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -582,6 +577,7 @@ before XOR'ing the result with `rs1`.
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:aes32esi_op]]
 Operation::
 [source,sail]
 --
@@ -623,6 +619,7 @@ AES middle round encryption instruction for RV32.
 Mnemonic::
 aes32esmi rd, rs1, rs2, bs
 
+[[norm:aes32esmi_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -644,6 +641,7 @@ MixColumn, before XOR'ing the result with `rs1`.
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:aes32esmi_op]]
 Operation::
 [source,sail]
 --
@@ -686,6 +684,7 @@ AES final round decryption instruction for RV64.
 Mnemonic::
 aes64ds rd, rs1, rs2
 
+[[norm:aes64ds_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -720,6 +719,7 @@ The following code snippet shows the final round of the AES block decryption.
 Note the reversed register order of the second instruction.
 ====
 
+[[norm:aes64ds_op]]
 Operation::
 [source,sail]
 --
@@ -760,6 +760,7 @@ AES middle round decryption instruction for RV64.
 Mnemonic::
 aes64dsm rd, rs1, rs2
 
+[[norm:aes64dsm_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -794,6 +795,7 @@ The following code snippet shows one middle round of the AES block decryption.
 Note the reversed register order of the second instruction.
 ====
 
+[[norm:aes64dsm_op]]
 Operation::
 [source,sail]
 --
@@ -835,6 +837,7 @@ AES final round encryption instruction for RV64.
 Mnemonic::
 aes64es rd, rs1, rs2
 
+[[norm:aes64es_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -869,6 +872,7 @@ The following code snippet shows the final round of the AES block encryption.
 Note the reversed register order of the second instruction.
 ====
 
+[[norm:aes64es_op]]
 Operation::
 [source,sail]
 --
@@ -909,6 +913,7 @@ AES middle round encryption instruction for RV64.
 Mnemonic::
 aes64esm rd, rs1, rs2
 
+[[norm:aes64esm_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -943,6 +948,7 @@ The following code snippet shows one middle round of the AES block encryption.
 Note the reversed register order of the second instruction.
 ====
 
+[[norm:aes64esm_op]]
 Operation::
 [source,sail]
 --
@@ -985,6 +991,7 @@ Block Cipher, and is used to aid creation of the decryption KeySchedule.
 Mnemonic::
 aes64im rd, rs1
 
+[[norm:aes64im_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -1009,6 +1016,7 @@ cite:[nist:fips:197] (Page 23, Section 5.3.5).
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:aes64im_op]]
 Operation::
 [source,sail]
 --
@@ -1050,6 +1058,7 @@ AES Block cipher involving the SBox operation.
 Mnemonic::
 aes64ks1i rd, rs1, rnum
 
+[[norm:aes64ks1i_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -1073,6 +1082,7 @@ latency does not depend on the data being operated on.
 Note that `rnum` must be in the range `0x0..0xA`.
 The values `0xB..0xF` are reserved.
 
+[[norm:aes64ks1i_op]]
 Operation::
 [source,sail]
 --
@@ -1124,6 +1134,7 @@ AES Block cipher.
 Mnemonic::
 aes64ks2 rd, rs1, rs2
 
+[[norm:aes64ks2_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -1144,6 +1155,7 @@ part of the AES block cipher Key Schedule.
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:aes64ks2_op]]
 Operation::
 [source,sail]
 --
@@ -2022,6 +2034,7 @@ the SHA2-256 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha256sig0 rd, rs1
 
+[[norm:sha256sig0_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2047,6 +2060,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha256sig0_op]]
 Operation::
 [source,sail]
 --
@@ -2088,6 +2102,7 @@ the SHA2-256 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha256sig1 rd, rs1
 
+[[norm:sha256sig1_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2113,6 +2128,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha256sig1_op]]
 Operation::
 [source,sail]
 --
@@ -2154,6 +2170,7 @@ the SHA2-256 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha256sum0 rd, rs1
 
+[[norm:sha256sum0_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2179,6 +2196,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha256sum0_op]]
 Operation::
 [source,sail]
 --
@@ -2220,6 +2238,7 @@ the SHA2-256 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha256sum1 rd, rs1
 
+[[norm:sha256sum1_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2245,6 +2264,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha256sum1_op]]
 Operation::
 [source,sail]
 --
@@ -2286,6 +2306,7 @@ used in the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sig0h rd, rs1, rs2
 
+[[norm:sha512sig0h_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2320,6 +2341,7 @@ using the following instruction sequence:
 
 ====
 
+[[norm:sha512sig0h_op]]
 Operation::
 [source,sail]
 --
@@ -2360,6 +2382,7 @@ used in the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sig0l rd, rs1, rs2
 
+[[norm:sha512sig0l_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2394,6 +2417,7 @@ using the following instruction sequence:
 
 ====
 
+[[norm:sha512sig0l_op]]
 Operation::
 [source,sail]
 --
@@ -2434,6 +2458,7 @@ used in the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sig1h rd, rs1, rs2
 
+[[norm:sha512sig1h_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2468,6 +2493,7 @@ using the following instruction sequence:
 
 ====
 
+[[norm:sha512sig1h_op]]
 Operation::
 [source,sail]
 --
@@ -2508,6 +2534,7 @@ used in the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sig1l rd, rs1, rs2
 
+[[norm:sha512sig1l_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2542,6 +2569,7 @@ using the following instruction sequence:
 
 ====
 
+[[norm:sha512sig1l_op]]
 Operation::
 [source,sail]
 --
@@ -2582,6 +2610,7 @@ used in the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sum0r rd, rs1, rs2
 
+[[norm:sha512sum0r_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2616,6 +2645,7 @@ using the following instruction sequence:
 Note the reversed source register ordering.
 ====
 
+[[norm:sha512sum0r_op]]
 Operation::
 [source,sail]
 --
@@ -2656,6 +2686,7 @@ used in the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sum1r rd, rs1, rs2
 
+[[norm:sha512sum1r_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2690,6 +2721,7 @@ using the following instruction sequence:
 Note the reversed source register ordering.
 ====
 
+[[norm:sha512sum1r_op]]
 Operation::
 [source,sail]
 --
@@ -2730,6 +2762,7 @@ the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sig0 rd, rs1
 
+[[norm:sha512sig0_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2751,6 +2784,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha512sig0_op]]
 Operation::
 [source,sail]
 --
@@ -2790,6 +2824,7 @@ the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sig1 rd, rs1
 
+[[norm:sha512sig1_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2811,6 +2846,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha512sig1_op]]
 Operation::
 [source,sail]
 --
@@ -2850,6 +2886,7 @@ the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sum0 rd, rs1
 
+[[norm:sha512sum0_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2871,6 +2908,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha512sum0_op]]
 Operation::
 [source,sail]
 --
@@ -2910,6 +2948,7 @@ the SHA2-512 hash function cite:[nist:fips:180:4].
 Mnemonic::
 sha512sum1 rd, rs1
 
+[[norm:sha512sum1_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2931,6 +2970,7 @@ cite:[nist:fips:180:4].
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sha512sum1_op]]
 Operation::
 [source,sail]
 --
@@ -2970,6 +3010,7 @@ the SM3 hash function cite:[gbt:sm3,iso:sm3].
 Mnemonic::
 sm3p0 rd, rs1
 
+[[norm:sm3p0_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -2996,6 +3037,7 @@ latency does not depend on the data being operated on.
 This instruction is based on work done in cite:[MJS:LWSHA:20].
 ====
 
+[[norm:sm3p0_op]]
 Operation::
 [source,sail]
 --
@@ -3034,6 +3076,7 @@ the SM3 hash function cite:[gbt:sm3,iso:sm3].
 Mnemonic::
 sm3p1 rd, rs1
 
+[[norm:sm3p1_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -3060,6 +3103,7 @@ latency does not depend on the data being operated on.
 This instruction is based on work done in cite:[MJS:LWSHA:20].
 ====
 
+[[norm:sm3p1_op]]
 Operation::
 [source,sail]
 --
@@ -3098,6 +3142,7 @@ cite:[gbt:sm4, iso:sm4].
 Mnemonic::
 sm4ed rd, rs1, rs2, bs
 
+[[norm:sm4ed_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -3123,6 +3168,7 @@ On RV64, the 32-bit result is sign extended to XLEN bits.
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sm4ed_op]]
 Operation::
 [source,sail]
 --
@@ -3167,6 +3213,7 @@ cite:[gbt:sm4, iso:sm4].
 Mnemonic::
 sm4ks rd, rs1, rs2, bs
 
+[[norm:sm4ks_enc]]
 Encoding::
 [wavedrom, , svg]
 ....
@@ -3192,6 +3239,7 @@ On RV64, the 32-bit result is sign extended to XLEN bits.
 This instruction must _always_ be implemented such that its execution
 latency does not depend on the data being operated on.
 
+[[norm:sm4ks_op]]
 Operation::
 [source,sail]
 --
@@ -3542,7 +3590,7 @@ detailed suggestions on how the entropy source output can be used.
 [[crypto_scalar_seed_csr]]
 ==== The `seed` CSR
 
-`seed` is an unprivileged CSR located at address `0x015`.
+[#norm:seed_csr_unpriv]#`seed` is an unprivileged CSR located at address `0x015`.#
 The 32-bit contents of `seed` are as follows:
 
 [%autowidth.stretch,cols="^,^,<",options="header",]
@@ -3559,11 +3607,11 @@ The 32-bit contents of `seed` are as follows:
 |`15: 0` |`entropy` |16 bits of randomness, only when `OPST=ES16`.
 |=======================================================================
 
-Attempts to access the `seed` CSR using a read-only CSR-access instruction
+[#norm:seed_ro_illegal]#Attempts to access the `seed` CSR using a read-only CSR-access instruction
 (`CSRRS`/`CSRRC` with _rs1_=`x0` or `CSRRSI`/`CSRRCI` with _uimm_=0) raise an
 illegal-instruction exception; any other CSR-access instruction may be used
-to access `seed`.
-The write value (in `rs1` or `uimm`) must be ignored by implementations.
+to access `seed`.#
+[#norm:seed_write_ignore]#The write value (in `rs1` or `uimm`) must be ignored by implementations.#
 The purpose of the write is to signal polling and flushing.
 
 Software normally uses the instruction `csrrw rd, seed, x0` to read the `seed`
@@ -3581,28 +3629,28 @@ Encoding::
 ]}
 ....
 
-The `seed` CSR is also access controlled by execution mode, and attempted
+[#norm:seed_exec_mode_control]#The `seed` CSR is also access controlled by execution mode, and attempted
 read or write access will raise an illegal-instruction exception outside M mode
 unless access is explicitly granted. See <<crypto_scalar_es_access>> for
-more details.
+more details.#
 
 The status bits `seed[31:30]` = `OPST` may be `ES16` (10),
 indicating successful polling, or one of three entropy polling failure
 statuses `BIST` (00), `WAIT` (01), or `DEAD` (11), discussed below.
 
-Each returned `seed[15:0]` = `entropy` value represents unique randomness
+[#norm:seed_entropy_unique]#Each returned `seed[15:0]` = `entropy` value represents unique randomness
 when `OPST`=`ES16` (`seed[31:30]` = `10`), even if its numerical value is
-the same as that of a previously polled `entropy` value. The implementation
+the same as that of a previously polled `entropy` value.# The implementation
 requirements of `entropy` bits are defined in <<crypto_scalar_es_req>>.
-When `OPST` is not `ES16`, `entropy` must be set to 0.
+[#norm:seed_entropy_zero_non_es16]#When `OPST` is not `ES16`, `entropy` must be set to 0.#
 An implementation may safely set reserved and custom bits to zeros.
 
-For security reasons, the interface guarantees that secret `entropy`
+[#norm:seed_wipe_on_read]#For security reasons, the interface guarantees that secret `entropy`
 words are not made available multiple times. Hence polling (reading) must
 also have the side effect of clearing (wipe-on-read) the `entropy` contents and
 changing the state to `WAIT` (unless there is `entropy`
 immediately available for `ES16`). Other states (`BIST`, `WAIT`, and `DEAD`)
-may be unaffected by polling.
+may be unaffected by polling.#
 
 The Status Bits returned in `seed[31:30]`=`OPST`:
 
@@ -3611,8 +3659,8 @@ indicates that Built-In Self-Test "on-demand" (BIST) testing is being
 performed. If `OPST` returns temporarily to `BIST` from any other
 state, this signals a non-fatal self-test alarm,
 which is non-actionable, apart from being logged.
-Such a `BIST` alarm must be latched until polled at least once to enable
-software to record its occurrence.
+[#norm:seed_bist_latch]#Such a `BIST` alarm must be latched until polled at least once to enable
+software to record its occurrence.#
 
 * `01` - `WAIT`
 means that a sufficient amount of entropy is not yet available. This
@@ -3753,9 +3801,9 @@ and quantum computing models, but only classical information flows.
 The virtual source security requirement maps to Post-Quantum Security
 Category 5 cite:[NI16].
 
-Any implementation of the `seed` CSR that limits the security
-strength shall not reduce it to less than 256 bits. If the security
-level is under 256 bits, then the interface must not be available.
+[#norm:seed_min_security_256]#Any implementation of the `seed` CSR that limits the security
+strength shall not reduce it to less than 256 bits.# [#norm:seed_disable_if_weak]#If the security
+level is under 256 bits, then the interface must not be available.#
 
 A virtual entropy source does not need to implement `WAIT` or `BIST` states.
 It should fail (`DEAD`) if the host DRBG or entropy source fails and
@@ -3765,70 +3813,9 @@ there is insufficient seeding material for the host DRBG.
 [[crypto_scalar_es_access]]
 ==== Access Control to `seed`
 
-The `seed` CSR is by default only available in M mode, but can be made
-available to other modes via the `mseccfg.sseed` and `mseccfg.useed`
-access control bits. `sseed` is bit `9` of and `useed` is
-bit `8` of the `mseccfg` CSR.
-Without the corresponding access control bit set to 1, any attempted
-access to `seed` from U, S, or HS modes will raise an illegal-instruction
-exception.
-
-VS and VU modes are present in systems with Hypervisor (H) extension
-implemented. If desired, a hypervisor can emulate accesses to the seed CSR
-from a virtual machine. Attempted access to `seed` from virtual modes
-VS and VU always raises an exception; a read-only instruction causes an
-illegal-instruction exception, while a read-write instruction (that can
-potentially be emulated) causes a virtual-instruction  exception only if
-`mseccfg.sseed=1`. Note that `mseccfg.useed` has no effect on the exception
-type for either VS or VU modes.
-
-.Entropy Source Access Control.
-
-[cols="1,1,1,7",options="header",]
-|=======================================================================
-|Mode | `sseed` | `useed` | Description
-
-| M
-| `*`
-| `*`
-| The `seed` CSR is always available in machine mode as normal (with a
-CSR read-write instruction.) Attempted read without a write raises an
-illegal-instruction exception regardless of mode and access control bits.
-
-| U
-| `*`
-| `0`
-| Any `seed` CSR access raises an illegal-instruction exception.
-
-| U
-| `*`
-| `1`
-| The `seed` CSR is accessible as normal. No exception is raised for read-write.
-
-| S/HS
-| `0`
-| `*`
-| Any `seed` CSR access raises an illegal-instruction exception.
-
-
-| S/HS
-| `1`
-| `*`
-| The `seed` CSR is accessible as normal. No exception is raised for read-write.
-
-| VS/VU
-| `0`
-| `*`
-| Any `seed` CSR access raises an illegal-instruction exception.
-
-| VS/VU
-| `1`
-| `*`
-| A read-write `seed` access raises a virtual-instruction  exception,
-while other access conditions raise an illegal-instruction exception.
-
-|=======================================================================
-
+The Zkr extension adds the `SSEED` and `USEED` fields to the `mseccfg` CSR to
+control access to the `seed` CSR from U, S, or HS modes (see Privileged ISA
+specification).
 
 Systems should implement carefully considered access control policies from
 lower privilege modes to physical entropy sources. The system can trap
@@ -3845,14 +3832,6 @@ constant value `0`. Software may discover if access to the `seed` CSR can be
 enabled in U and S mode by writing a `1` to `[s,u]seed` and reading back
 the result.
 
-If S or U mode is not implemented, then the corresponding `[s,u]seed`
-bits of `mseccfg` must be hardwired to zero.
-The `[s,u]seed` bits must have a defined reset value. The system
-must not allow them to be in an undefined state after a reset.
-`mseccfg` exists if `Zkr` is implemented, or if it is required by other
-processor features. If `Zkr` is _not_ implemented, the `[s,u]seed` bits must
-be hardwired to zero.
-
 [[crypto_scalar_zkt]]
 
 === Data Independent Execution Latency Subset: Zkt
@@ -3861,7 +3840,7 @@ The Zkt extension attests that the machine has data-independent execution
 time for a safe subset of instructions. This property is commonly called
 _"constant-time"_ although should not be taken with that literal meaning.
 
-All currently proposed cryptographic instructions (scalar K extension) are on
+All currently defined cryptographic instructions (Zk* and Zbk* extensions) are on
 this list, together with a set of relevant supporting instructions from
 I, M, C, and B extensions.
 
@@ -3899,8 +3878,8 @@ timing side channels when compiled and running on a Zkt-enabled RISC-V target.
 The Zkt extension explicitly states many of the common latency assumptions
 made by cryptography developers.
 
-Vendors do not have to implement all of the list's instructions to be Zkt
-compliant; however, if they claim to have Zkt and implement any of the listed instructions, it must have data-independent latency.
+[#norm:zkt_optional_instr]#Vendors do not have to implement all of the list's instructions to be Zkt
+compliant;# however, [#norm:zkt_impl_must_constant_latency]#if they claim to have Zkt and implement any of the listed instructions, it must have data-independent latency.#
 
 For example, many simple RV32I and RV64I cores (without Multiply, Compressed,
 Bitmanip, or Cryptographic extensions) are technically compliant with Zkt.
@@ -4022,67 +4001,94 @@ Only basic arithmetic and `slt*` (for carry computations) are included.
 The data-independent timing requirement does not apply to HINT instruction
 encoding forms of these instructions.
 
-[%header,cols="^1,^1,4,8"]
+[%header,cols="^1,^1,4"]
 |===
 |RV32
 |RV64
 |Mnemonic
-|Instruction
 
-| &#10003; | &#10003; | lui   _rd_, _imm_        |  <<insns-lui>>
-| &#10003; | &#10003; | auipc _rd_, _imm_        |  <<insns-auipc>>
-| &#10003; | &#10003; | addi  _rd_, _rs1_, _imm_ |  <<insns-addi>>
-| &#10003; | &#10003; | slti  _rd_, _rs1_, _imm_ |  <<insns-slti>>
-| &#10003; | &#10003; | sltiu _rd_, _rs1_, _imm_ |  <<insns-sltiu>>
-| &#10003; | &#10003; | xori  _rd_, _rs1_, _imm_ |  <<insns-xori>>
-| &#10003; | &#10003; | ori   _rd_, _rs1_, _imm_ |  <<insns-ori>>
-| &#10003; | &#10003; | andi  _rd_, _rs1_, _imm_ |  <<insns-andi>>
-| &#10003; | &#10003; | slli  _rd_, _rs1_, _imm_ |  <<insns-slli>>
-| &#10003; | &#10003; | srli  _rd_, _rs1_, _imm_ |  <<insns-srli>>
-| &#10003; | &#10003; | srai  _rd_, _rs1_, _imm_ |  <<insns-srai>>
-| &#10003; | &#10003; | add   _rd_, _rs1_, _rs2_ |  <<insns-add>>
-| &#10003; | &#10003; | sub   _rd_, _rs1_, _rs2_ |  <<insns-sub>>
-| &#10003; | &#10003; | sll   _rd_, _rs1_, _rs2_ |  <<insns-sll>>
-| &#10003; | &#10003; | slt   _rd_, _rs1_, _rs2_ |  <<insns-slt>>
-| &#10003; | &#10003; | sltu  _rd_, _rs1_, _rs2_ |  <<insns-sltu>>
-| &#10003; | &#10003; | xor   _rd_, _rs1_, _rs2_ |  <<insns-xor>>
-| &#10003; | &#10003; | srl   _rd_, _rs1_, _rs2_ |  <<insns-srl>>
-| &#10003; | &#10003; | sra   _rd_, _rs1_, _rs2_ |  <<insns-sra>>
-| &#10003; | &#10003; | or    _rd_, _rs1_, _rs2_ |  <<insns-or>>
-| &#10003; | &#10003; | and   _rd_, _rs1_, _rs2_ |  <<insns-and>>
-|          | &#10003; | addiw _rd_, _rs1_, _imm_ |  <<insns-addiw>>
-|          | &#10003; | slliw _rd_, _rs1_, _imm_ |  <<insns-slliw>>
-|          | &#10003; | srliw _rd_, _rs1_, _imm_ |  <<insns-srliw>>
-|          | &#10003; | sraiw _rd_, _rs1_, _imm_ |  <<insns-sraiw>>
-|          | &#10003; | addw  _rd_, _rs1_, _rs2_ |  <<insns-addw>>
-|          | &#10003; | subw  _rd_, _rs1_, _rs2_ |  <<insns-subw>>
-|          | &#10003; | sllw  _rd_, _rs1_, _rs2_ |  <<insns-sllw>>
-|          | &#10003; | srlw  _rd_, _rs1_, _rs2_ |  <<insns-srlw>>
-|          | &#10003; | sraw  _rd_, _rs1_, _rs2_ |  <<insns-sraw>>
+| {check} | {check} | lui   _rd_, _imm_
+| {check} | {check} | auipc _rd_, _imm_
+| {check} | {check} | addi  _rd_, _rs1_, _imm_
+| {check} | {check} | slti  _rd_, _rs1_, _imm_
+| {check} | {check} | sltiu _rd_, _rs1_, _imm_
+| {check} | {check} | xori  _rd_, _rs1_, _imm_
+| {check} | {check} | ori   _rd_, _rs1_, _imm_
+| {check} | {check} | andi  _rd_, _rs1_, _imm_
+| {check} | {check} | slli  _rd_, _rs1_, _imm_
+| {check} | {check} | srli  _rd_, _rs1_, _imm_
+| {check} | {check} | srai  _rd_, _rs1_, _imm_
+| {check} | {check} | add   _rd_, _rs1_, _rs2_
+| {check} | {check} | sub   _rd_, _rs1_, _rs2_
+| {check} | {check} | sll   _rd_, _rs1_, _rs2_
+| {check} | {check} | slt   _rd_, _rs1_, _rs2_
+| {check} | {check} | sltu  _rd_, _rs1_, _rs2_
+| {check} | {check} | xor   _rd_, _rs1_, _rs2_
+| {check} | {check} | srl   _rd_, _rs1_, _rs2_
+| {check} | {check} | sra   _rd_, _rs1_, _rs2_
+| {check} | {check} | or    _rd_, _rs1_, _rs2_
+| {check} | {check} | and   _rd_, _rs1_, _rs2_
+|          | {check} | addiw _rd_, _rs1_, _imm_
+|          | {check} | slliw _rd_, _rs1_, _imm_
+|          | {check} | srliw _rd_, _rs1_, _imm_
+|          | {check} | sraiw _rd_, _rs1_, _imm_
+|          | {check} | addw  _rd_, _rs1_, _rs2_
+|          | {check} | subw  _rd_, _rs1_, _rs2_
+|          | {check} | sllw  _rd_, _rs1_, _rs2_
+|          | {check} | srlw  _rd_, _rs1_, _rs2_
+|          | {check} | sraw  _rd_, _rs1_, _rs2_
 |===
 
 ===== RVM (Multiply)
 
 Multiplication is included; division and remaindering excluded.
 
-[%header,cols="^1,^1,4,8"]
+[%header,cols="^1,^1,4"]
 |===
 |RV32
 |RV64
 |Mnemonic
-|Instruction
 
-| &#10003; | &#10003; | mul    _rd_, _rs1_, _rs2_ | <<insns-mul>>
-| &#10003; | &#10003; | mulh   _rd_, _rs1_, _rs2_ | <<insns-mulh>>
-| &#10003; | &#10003; | mulhsu _rd_, _rs1_, _rs2_ | <<insns-mulhsu>>
-| &#10003; | &#10003; | mulhu  _rd_, _rs1_, _rs2_ | <<insns-mulhu>>
-|          | &#10003; | mulw   _rd_, _rs1_, _rs2_ | <<insns-mulw>>
+| {check} | {check} | mul    _rd_, _rs1_, _rs2_
+| {check} | {check} | mulh   _rd_, _rs1_, _rs2_
+| {check} | {check} | mulhsu _rd_, _rs1_, _rs2_
+| {check} | {check} | mulhu  _rd_, _rs1_, _rs2_
+|          | {check} | mulw   _rd_, _rs1_, _rs2_
 |===
 
 ===== RVC (Compressed)
 
 Same criteria as in RVI. Organised by quadrants.
 
+[%header,cols="^1,^1,4"]
+|===
+|RV32
+|RV64
+|Mnemonic
+
+| {check} | {check} | c.nop
+| {check} | {check} | c.addi
+|          | {check} | c.addiw
+| {check} | {check} | c.lui
+| {check} | {check} | c.srli
+| {check} | {check} | c.srai
+| {check} | {check} | c.andi
+| {check} | {check} | c.sub
+| {check} | {check} | c.xor
+| {check} | {check} | c.or
+| {check} | {check} | c.and
+|          | {check} | c.subw
+|          | {check} | c.addw
+| {check} | {check} | c.slli
+| {check} | {check} | c.mv
+| {check} | {check} | c.add
+|===
+
+===== Zcb Extension
+
+These instructions are compressed versions of I and M instructions that are
+included in Zkt.
+
 [%header,cols="^1,^1,4,8"]
 |===
 |RV32
@@ -4090,22 +4096,9 @@ Same criteria as in RVI. Organised by quadrants.
 |Mnemonic
 |Instruction
 
-| &#10003; | &#10003; | c.nop      | <<insns-c_nop>>
-| &#10003; | &#10003; | c.addi     | <<insns-c_addi>>
-|          | &#10003; | c.addiw    | <<insns-c_addiw>>
-| &#10003; | &#10003; | c.lui      | <<insns-c_lui>>
-| &#10003; | &#10003; | c.srli     | <<insns-c_srli>>
-| &#10003; | &#10003; | c.srai     | <<insns-c_srai>>
-| &#10003; | &#10003; | c.andi     | <<insns-c_andi>>
-| &#10003; | &#10003; | c.sub      | <<insns-c_sub>>
-| &#10003; | &#10003; | c.xor      | <<insns-c_xor>>
-| &#10003; | &#10003; | c.or       | <<insns-c_or>>
-| &#10003; | &#10003; | c.and      | <<insns-c_and>>
-|          | &#10003; | c.subw     | <<insns-c_subw>>
-|          | &#10003; | c.addw     | <<insns-c_addw>>
-| &#10003; | &#10003; | c.slli     | <<insns-c_slli>>
-| &#10003; | &#10003; | c.mv       | <<insns-c_mv>>
-| &#10003; | &#10003; | c.add      | <<insns-c_add>>
+| {check} | {check} | c.mul       | <<insns-c_mul>>
+| {check} | {check} | c.not       | <<insns-c_not>>
+| {check} | {check} | c.zext.b    | <<insns-c_zext_b>>
 |===
 
 ===== RVK (Scalar Cryptography)
@@ -4122,35 +4115,35 @@ See <<crypto_scalar_appx_es_access>>.
 |Mnemonic
 |Instruction
 
-| &#10003; |          | aes32dsi     | <<insns-aes32dsi>>
-| &#10003; |          | aes32dsmi    | <<insns-aes32dsmi>>
-| &#10003; |          | aes32esi     | <<insns-aes32esi>>
-| &#10003; |          | aes32esmi    | <<insns-aes32esmi>>
-|          | &#10003; | aes64ds      | <<insns-aes64ds>>
-|          | &#10003; | aes64dsm     | <<insns-aes64dsm>>
-|          | &#10003; | aes64es      | <<insns-aes64es>>
-|          | &#10003; | aes64esm     | <<insns-aes64esm>>
-|          | &#10003; | aes64im      | <<insns-aes64im>>
-|          | &#10003; | aes64ks1i    | <<insns-aes64ks1i>>
-|          | &#10003; | aes64ks2     | <<insns-aes64ks2>>
-| &#10003; | &#10003; | sha256sig0   | <<insns-sha256sig0>>
-| &#10003; | &#10003; | sha256sig1   | <<insns-sha256sig1>>
-| &#10003; | &#10003; | sha256sum0   | <<insns-sha256sum0>>
-| &#10003; | &#10003; | sha256sum1   | <<insns-sha256sum1>>
-| &#10003; |          | sha512sig0h  | <<insns-sha512sig0h>>
-| &#10003; |          | sha512sig0l  | <<insns-sha512sig0l>>
-| &#10003; |          | sha512sig1h  | <<insns-sha512sig1h>>
-| &#10003; |          | sha512sig1l  | <<insns-sha512sig1l>>
-| &#10003; |          | sha512sum0r  | <<insns-sha512sum0r>>
-| &#10003; |          | sha512sum1r  | <<insns-sha512sum1r>>
-|          | &#10003; | sha512sig0   | <<insns-sha512sig0>>
-|          | &#10003; | sha512sig1   | <<insns-sha512sig1>>
-|          | &#10003; | sha512sum0   | <<insns-sha512sum0>>
-|          | &#10003; | sha512sum1   | <<insns-sha512sum1>>
-| &#10003; | &#10003; | sm3p0        | <<insns-sm3p0>>
-| &#10003; | &#10003; | sm3p1        | <<insns-sm3p1>>
-| &#10003; | &#10003; | sm4ed        | <<insns-sm4ed>>
-| &#10003; | &#10003; | sm4ks        | <<insns-sm4ks>>
+| {check} |          | aes32dsi     | <<insns-aes32dsi>>
+| {check} |          | aes32dsmi    | <<insns-aes32dsmi>>
+| {check} |          | aes32esi     | <<insns-aes32esi>>
+| {check} |          | aes32esmi    | <<insns-aes32esmi>>
+|          | {check} | aes64ds      | <<insns-aes64ds>>
+|          | {check} | aes64dsm     | <<insns-aes64dsm>>
+|          | {check} | aes64es      | <<insns-aes64es>>
+|          | {check} | aes64esm     | <<insns-aes64esm>>
+|          | {check} | aes64im      | <<insns-aes64im>>
+|          | {check} | aes64ks1i    | <<insns-aes64ks1i>>
+|          | {check} | aes64ks2     | <<insns-aes64ks2>>
+| {check} | {check} | sha256sig0   | <<insns-sha256sig0>>
+| {check} | {check} | sha256sig1   | <<insns-sha256sig1>>
+| {check} | {check} | sha256sum0   | <<insns-sha256sum0>>
+| {check} | {check} | sha256sum1   | <<insns-sha256sum1>>
+| {check} |          | sha512sig0h  | <<insns-sha512sig0h>>
+| {check} |          | sha512sig0l  | <<insns-sha512sig0l>>
+| {check} |          | sha512sig1h  | <<insns-sha512sig1h>>
+| {check} |          | sha512sig1l  | <<insns-sha512sig1l>>
+| {check} |          | sha512sum0r  | <<insns-sha512sum0r>>
+| {check} |          | sha512sum1r  | <<insns-sha512sum1r>>
+|          | {check} | sha512sig0   | <<insns-sha512sig0>>
+|          | {check} | sha512sig1   | <<insns-sha512sig1>>
+|          | {check} | sha512sum0   | <<insns-sha512sum0>>
+|          | {check} | sha512sum1   | <<insns-sha512sum1>>
+| {check} | {check} | sm3p0        | <<insns-sm3p0>>
+| {check} | {check} | sm3p1        | <<insns-sm3p1>>
+| {check} | {check} | sm4ed        | <<insns-sm4ed>>
+| {check} | {check} | sm4ks        | <<insns-sm4ks>>
 |===
 
 
@@ -4165,26 +4158,26 @@ The <<zbkb-sc>>, <<zbkc-sc>> and <<zbkx-sc>> extensions are included in their en
 |Mnemonic
 |Instruction
 
-| &#10003; | &#10003; |  clmul       | <<insns-clmul-sc>>
-| &#10003; | &#10003; |  clmulh      | <<insns-clmulh-sc>>
-| &#10003; | &#10003; |  xperm4      | <<insns-xperm4-sc>>
-| &#10003; | &#10003; |  xperm8      | <<insns-xperm8-sc>>
-| &#10003; | &#10003; |  ror         | <<insns-ror-sc>>
-| &#10003; | &#10003; |  rol         | <<insns-rol-sc>>
-| &#10003; | &#10003; |  rori        | <<insns-rori-sc>>
-|          | &#10003; |  rorw        | <<insns-rorw-sc>>
-|          | &#10003; |  rolw        | <<insns-rolw-sc>>
-|          | &#10003; |  roriw       | <<insns-roriw-sc>>
-| &#10003; | &#10003; |  andn        | <<insns-andn-sc>>
-| &#10003; | &#10003; |  orn         | <<insns-orn-sc>>
-| &#10003; | &#10003; |  xnor        | <<insns-xnor-sc>>
-| &#10003; | &#10003; |  pack        | <<insns-pack-sc>>
-| &#10003; | &#10003; |  packh       | <<insns-packh-sc>>
-|          | &#10003; |  packw       | <<insns-packw-sc>>
-| &#10003; | &#10003; |  brev8       | <<insns-brev8-sc>>
-| &#10003; | &#10003; |  rev8        | <<insns-rev8-sc>>
-| &#10003; |          |  zip         | <<insns-zip-sc>>
-| &#10003; |          |  unzip       | <<insns-unzip-sc>>
+| {check} | {check} |  clmul       | <<insns-clmul-sc>>
+| {check} | {check} |  clmulh      | <<insns-clmulh-sc>>
+| {check} | {check} |  xperm4      | <<insns-xperm4-sc>>
+| {check} | {check} |  xperm8      | <<insns-xperm8-sc>>
+| {check} | {check} |  ror         | <<insns-ror-sc>>
+| {check} | {check} |  rol         | <<insns-rol-sc>>
+| {check} | {check} |  rori        | <<insns-rori-sc>>
+|          | {check} |  rorw        | <<insns-rorw-sc>>
+|          | {check} |  rolw        | <<insns-rolw-sc>>
+|          | {check} |  roriw       | <<insns-roriw-sc>>
+| {check} | {check} |  andn        | <<insns-andn-sc>>
+| {check} | {check} |  orn         | <<insns-orn-sc>>
+| {check} | {check} |  xnor        | <<insns-xnor-sc>>
+| {check} | {check} |  pack        | <<insns-pack-sc>>
+| {check} | {check} |  packh       | <<insns-packh-sc>>
+|          | {check} |  packw       | <<insns-packw-sc>>
+| {check} | {check} |  brev8       | <<insns-brev8-sc>>
+| {check} | {check} |  rev8        | <<insns-rev8-sc>>
+| {check} |          |  zip         | <<insns-zip-sc>>
+| {check} |          |  unzip       | <<insns-unzip-sc>>
 |===
 
 [[crypto_scalar_appx_rationale]]
@@ -4377,7 +4370,7 @@ The `pack*` instructions are
 useful for re-arranging halfwords within words, and
 generally getting data into the right shape prior to applying transforms.
 This is particularly useful for cryptographic algorithms which pass inputs
-around as (potentially un-aligned) byte strings, but can operate on words
+around as (potentially unaligned) byte strings, but can operate on words
 made out of those byte strings.
 This occurs (for example) in AES when loading blocks and keys (which may not
 be word aligned) into registers to perform the round functions.
